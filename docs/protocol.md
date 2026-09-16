@@ -10,7 +10,7 @@ ESP32 → Mac:
 {"type":"event","event":"touch","timestamp":1789549000,"value":1}
 ```
 
-Events describe something that happened. They should be small, serializable, and independent of hardware-specific implementation details.
+Events describe something that happened. They are validated before entering the personality engine.
 
 ## Command
 
@@ -22,12 +22,25 @@ Mac → ESP32:
 
 Commands describe an action for the physical pet.
 
+## State
+
+Mac → ESP32 after an event:
+
+```json
+{"type":"state","state":{"mood":"happy","energy":79.5}}
+```
+
+## Error
+
+Invalid messages receive an error object rather than entering the behavior loop.
+
 ## Connection behavior
 
 1. ESP32 connects to the Mac server.
-2. ESP32 sends a heartbeat.
-3. Events are queued and transmitted without blocking sensor handling.
-4. Mac sends commands.
-5. If the connection drops, ESP32 enters basic local behavior and retries.
+2. Mac sends current state.
+3. ESP32 sends events.
+4. Mac validates events and updates personality.
+5. Mac sends commands and updated state.
+6. If the connection drops, ESP32 enters basic local behavior and retries.
 
-The protocol is intentionally small for V1. New fields should be added only when a real requirement appears.
+The protocol is intentionally small for V1.

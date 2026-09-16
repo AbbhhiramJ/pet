@@ -1,17 +1,17 @@
 # Offline AI Pet
 
-A software-first foundation for a small offline AI pet.
+Software-first foundation for a small offline AI pet.
 
 ## Architecture
 
-- **Mac:** AI brain — local LLM, speech, memory, personality, and high-level decisions.
-- **ESP32-S3:** physical body — sensors, display, servos, audio, and real-time behavior.
-- **Local network:** WebSocket connection between the Mac and pet.
+- **Mac:** local AI brain, personality, memory, speech and high-level decisions.
+- **ESP32-S3:** physical body, sensors, display, servos and real-time behavior.
+- **Local network:** WebSocket communication between the Mac and pet.
 - **Offline fallback:** the ESP32 can perform basic behavior without the Mac.
 
 ## Current milestone
 
-This repository starts with a hardware-independent simulator and protocol. The simulator lets us validate the complete event → personality → command loop before purchasing hardware.
+The repository now includes a deterministic personality engine, validated JSON protocol models, a hardware-independent simulator, a local WebSocket Mac brain, and a virtual ESP32 client. This lets the communication loop be tested before buying hardware.
 
 ## Run
 
@@ -20,13 +20,20 @@ cd brain
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python -m brain.cli demo
+cd ..
+python3 -m brain.cli demo
 ```
 
-The simulator can also be run directly:
+Start the Mac brain:
 
 ```bash
-python -m simulator.pet_sim
+python3 -m brain.cli server
 ```
 
-See `docs/architecture.md` and `docs/protocol.md` for the design.
+In another terminal run the virtual ESP32:
+
+```bash
+python3 -m simulator.virtual_esp32
+```
+
+Then send `touch`, `motion`, or `voice` events and observe the Mac responses.
