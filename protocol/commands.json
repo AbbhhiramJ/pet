@@ -2,17 +2,53 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Pet Command",
   "type": "object",
-  "required": ["type", "command"],
+  "required": [
+    "type",
+    "command",
+    "command_id",
+    "device_id",
+    "timestamp"
+  ],
   "properties": {
-    "type": {"const": "command"},
-    "command": {
-      "type": "string",
-      "enum": ["set_expression", "move_servo", "play_sound", "set_led", "sleep", "wake", "heartbeat"]
+    "type": {
+      "const": "command"
     },
-    "expression": {"type": "string"},
-    "servo": {"type": "string"},
-    "angle": {"type": "integer", "minimum": 0, "maximum": 180},
-    "sound": {"type": "string"},
+    "command": {
+      "enum": [
+        "set_expression",
+        "move_servo",
+        "play_sound",
+        "set_led",
+        "sleep",
+        "wake",
+        "heartbeat"
+      ]
+    },
+    "command_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "device_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "number"
+    },
+    "expression": {
+      "type": "string"
+    },
+    "servo": {
+      "type": "string"
+    },
+    "angle": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 180
+    },
+    "sound": {
+      "type": "string"
+    },
     "value": {}
   },
   "additionalProperties": false

@@ -2,16 +2,42 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Pet Event",
   "type": "object",
-  "required": ["type", "event", "timestamp"],
+  "required": [
+    "type",
+    "event",
+    "event_id",
+    "device_id",
+    "timestamp"
+  ],
   "properties": {
-    "type": {"const": "event"},
-    "event": {
-      "type": "string",
-      "enum": ["touch", "motion", "orientation", "voice", "heartbeat", "battery"]
+    "type": {
+      "const": "event"
     },
-    "timestamp": {"type": "number"},
+    "event": {
+      "enum": [
+        "touch",
+        "motion",
+        "orientation",
+        "voice",
+        "heartbeat",
+        "battery"
+      ]
+    },
+    "event_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "device_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timestamp": {
+      "type": "number"
+    },
     "value": {},
-    "data": {"type": "object"}
+    "data": {
+      "type": "object"
+    }
   },
   "additionalProperties": false
 }
