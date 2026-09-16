@@ -1,8 +1,8 @@
 import json
 import time
 
-from brain.personality import PersonalityEngine
-from brain.models import PetEvent
+from brain.brain.models import PetEvent
+from brain.brain.personality import PersonalityEngine
 
 
 def event(name: str, value=None) -> PetEvent:

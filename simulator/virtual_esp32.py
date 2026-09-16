@@ -4,7 +4,7 @@ import time
 
 from websockets.asyncio.client import connect
 
-from brain.models import PetEvent
+from brain.brain.models import PetEvent
 
 URL = "ws://127.0.0.1:8765"
 
