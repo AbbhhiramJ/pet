@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Pet Event",
+  "type": "object",
+  "required": ["type", "event", "timestamp"],
+  "properties": {
+    "type": {"const": "event"},
+    "event": {
+      "type": "string",
+      "enum": ["touch", "motion", "orientation", "voice", "heartbeat", "battery"]
+    },
+    "timestamp": {"type": "number"},
+    "value": {},
+    "data": {"type": "object"}
+  },
+  "additionalProperties": false
+}
