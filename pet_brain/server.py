@@ -10,6 +10,7 @@ from pet_brain.protocol import new_id, now
 HOST = "127.0.0.1"
 PORT = 8765
 
+
 class PetServer:
     def __init__(self) -> None:
         self.engine = PersonalityEngine()
@@ -26,11 +27,11 @@ class PetServer:
                 await websocket.send(json.dumps({"type": "error", "error": "invalid_event", "detail": str(exc)}))
                 continue
 
-            ack = PetAck(message_id=event.event_id, timestamp=now())
+            detail = "heartbeat_received" if event.event == "heartbeat" else None
+            ack = PetAck(message_id=event.event_id, timestamp=now(), detail=detail)
             await websocket.send(ack.model_dump_json())
 
             if event.event == "heartbeat":
-                await websocket.send(PetAck(message_id=event.event_id, timestamp=now(), detail="heartbeat_received").model_dump_json())
                 continue
 
             for action in self.engine.handle(event.event):
@@ -49,11 +50,13 @@ class PetServer:
 
             await self.send_state(websocket)
 
+
 async def run_server(host: str = HOST, port: int = PORT) -> None:
     server = PetServer()
     async with serve(server.handler, host, port):
         print(f"PET BRAIN listening on ws://{host}:{port}")
         await asyncio.Future()
+
 
 if __name__ == "__main__":
     asyncio.run(run_server())
