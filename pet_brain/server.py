@@ -24,14 +24,20 @@ class PetServer:
     async def send_actions(self, websocket: ServerConnection, actions: list[dict], device_id: str) -> None:
         for action in actions:
             command = PetCommand(
-                command=action["command"], command_id=new_id("cmd"), device_id=device_id, timestamp=now(),
-                expression=action.get("expression"), servo=action.get("servo"), angle=action.get("angle"),
-                sound=action.get("sound"), value=action.get("value"),
+                command=action["command"],
+                command_id=new_id("cmd"),
+                device_id=device_id,
+                timestamp=now(),
+                expression=action.get("expression"),
+                servo=action.get("servo"),
+                angle=action.get("angle"),
+                sound=action.get("sound"),
+                value=action.get("value"),
             )
             await websocket.send(command.model_dump_json())
 
     async def broadcast_actions(self, actions: list[dict]) -> None:
-        if not actions or not self.clients:
+        if not self.clients:
             return
         dead_clients: set[ServerConnection] = set()
         for websocket in tuple(self.clients):
@@ -57,13 +63,24 @@ class PetServer:
                 try:
                     event = PetEvent.model_validate_json(raw)
                 except Exception as exc:
-                    await websocket.send(json.dumps({"type": "error", "error": "invalid_event", "detail": str(exc)}))
+                    await websocket.send(
+                        json.dumps(
+                            {
+                                "type": "error",
+                                "error": "invalid_event",
+                                "detail": str(exc),
+                            }
+                        )
+                    )
                     continue
+
                 detail = "heartbeat_received" if event.event == "heartbeat" else None
                 ack = PetAck(message_id=event.event_id, timestamp=now(), detail=detail)
                 await websocket.send(ack.model_dump_json())
+
                 if event.event == "heartbeat":
                     continue
+
                 actions = self.engine.handle_event(event.event)
                 await self.send_actions(websocket, actions, event.device_id)
                 await self.send_state(websocket)
