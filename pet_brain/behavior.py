@@ -20,6 +20,31 @@ class BehaviorEngine:
         self.rng = rng or random.Random()
         self.awake = True
 
+    def handle_event(self, event: str) -> list[dict]:
+        if event in {"touch", "motion", "voice"} and not self.awake:
+            actions = self.wake()
+        else:
+            actions = []
+
+        changes = {
+            "touch": (5, 4, 0, -4, -0.5, "happy"),
+            "motion": (0, 0, 3, -2, 0, "curious"),
+            "voice": (0, 0, 2, -3, 0, "listening"),
+        }
+        if event not in changes or not self.awake:
+            return actions
+
+        affection, happiness, curiosity, boredom, energy, expression = changes[event]
+        self.state.affection += affection
+        self.state.happiness += happiness
+        self.state.curiosity += curiosity
+        self.state.boredom += boredom
+        self.state.energy += energy
+        self.state.sleepiness = max(0.0, self.state.sleepiness - (3.0 if event == "touch" else 1.0))
+        self.state.clamp()
+        actions.append({"command": "set_expression", "expression": expression, "reason": f"event_{event}"})
+        return actions
+
     def tick(self, minutes: float = 1.0) -> list[dict]:
         if minutes < 0:
             raise ValueError("minutes must be non-negative")
@@ -67,7 +92,7 @@ class BehaviorEngine:
             "bored": "bored",
             "affectionate": "love",
             "neutral": "neutral",
-        }[self.state.mood]
+        }.get(self.state.mood, "neutral")
 
     def snapshot(self) -> dict:
         return {

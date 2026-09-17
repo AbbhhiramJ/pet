@@ -14,8 +14,6 @@ def test_sleep_when_energy_is_critical() -> None:
 def test_wake_after_rest() -> None:
     engine = BehaviorEngine(PetState(energy=34.0, sleepiness=26.0), Random(1))
     engine.awake = False
-    engine.state.sleepiness = 26.0
-    engine.state.energy = 34.0
     actions = engine.tick(3)
     assert actions == [{"command": "wake", "reason": "rested"}]
     assert engine.awake is True
@@ -37,3 +35,20 @@ def test_expression_tracks_mood() -> None:
     state = PetState(happiness=90.0)
     engine = BehaviorEngine(state, Random(1))
     assert engine.expression_for_mood() == "happy"
+
+
+def test_touch_updates_state_and_expression() -> None:
+    engine = BehaviorEngine(PetState(), Random(1))
+    actions = engine.handle_event("touch")
+    assert actions[-1]["expression"] == "happy"
+    assert engine.state.affection == 55.0
+    assert engine.state.happiness == 74.0
+
+
+def test_sleeping_interaction_wakes_pet() -> None:
+    engine = BehaviorEngine(PetState(energy=20.0, sleepiness=80.0), Random(1))
+    engine.awake = False
+    actions = engine.handle_event("touch")
+    assert actions[0]["command"] == "wake"
+    assert actions[-1]["expression"] == "happy"
+    assert engine.awake is True

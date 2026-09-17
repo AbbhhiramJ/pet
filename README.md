@@ -1,21 +1,27 @@
 # Offline AI Pet
 
+A privacy-first desktop pet with a deterministic real-time behavior layer and a future local AI brain.
+
 ## Architecture
 
-The pet uses a split architecture:
+- **Mac:** local AI brain, LLM, speech, memory, and high-level interaction.
+- **ESP32-S3:** real-time body controller for sensors, display, audio, and motors.
+- **WebSocket:** structured local event/command transport.
+- **Behavior Engine:** deterministic sensor reactions, mood/expression mapping, idle behavior, and sleep/wake state.
 
-- **Mac** — local AI brain: LLM, STT, TTS, memory, personality and high-level reasoning.
-- **ESP32-S3** — physical body: sensors, display, servos, audio and deterministic fallback behavior.
-- **WebSocket** — local persistent communication between the Mac and ESP32-S3.
+The LLM is intentionally outside the real-time sensor loop.
 
-## Behavior Engine V1
+## Run
 
-The deterministic behavior layer sits between personality state and physical commands. It provides:
+```bash
+brain/.venv/bin/python -m simulator.pet_sim
+brain/.venv/bin/python -m pet_brain.server
+brain/.venv/bin/python -m simulator.virtual_esp32
+brain/.venv/bin/python -m pytest -q
+```
 
-- energy, boredom and sleepiness progression
-- automatic sleep/wake transitions
-- mood-to-expression mapping
-- bounded spontaneous idle behavior
-- deterministic testing through an injectable random generator
+## Current status
 
-The LLM is intentionally outside this real-time loop.
+- Protocol V1.1: event IDs, command IDs, device identity, timestamps, ACKs, heartbeat, and strict validation.
+- Behavior Engine V1: deterministic interactions, boredom/energy/sleepiness progression, sleep/wake, idle behavior, and expression mapping.
+- WebSocket server: routes supported ESP32 events through the Behavior Engine and returns structured commands/state.
