@@ -1,41 +1,21 @@
 # Offline AI Pet
 
-Software-first foundation for an offline AI pet. The Mac is the AI brain; the ESP32-S3 is the physical body.
-
 ## Architecture
 
-- **ESP32 → Mac:** validated events
-- **Mac → ESP32:** validated commands
-- **IDs:** every event and command has a unique ID
-- **ACK:** the Mac acknowledges received events
-- **Heartbeat:** supported as a protocol event
-- **Offline:** no cloud service is required
+The pet uses a split architecture:
 
-## Run
+- **Mac** — local AI brain: LLM, STT, TTS, memory, personality and high-level reasoning.
+- **ESP32-S3** — physical body: sensors, display, servos, audio and deterministic fallback behavior.
+- **WebSocket** — local persistent communication between the Mac and ESP32-S3.
 
-From the repository root:
+## Behavior Engine V1
 
-```bash
-cd ~/pet
-brain/.venv/bin/python -m pet_brain.cli demo
-```
+The deterministic behavior layer sits between personality state and physical commands. It provides:
 
-Start the Mac brain:
+- energy, boredom and sleepiness progression
+- automatic sleep/wake transitions
+- mood-to-expression mapping
+- bounded spontaneous idle behavior
+- deterministic testing through an injectable random generator
 
-```bash
-brain/.venv/bin/python -m pet_brain.cli server
-```
-
-In another terminal, run the virtual ESP32:
-
-```bash
-brain/.venv/bin/python -m simulator.virtual_esp32
-```
-
-Run protocol tests:
-
-```bash
-brain/.venv/bin/python -m pytest -q
-```
-
-The simulator and future ESP32 firmware will use the same event/command contract.
+The LLM is intentionally outside this real-time loop.
