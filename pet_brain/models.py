@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 EventName = Literal["touch", "motion", "orientation", "voice", "heartbeat", "battery"]
 CommandName = Literal["set_expression", "move_servo", "play_sound", "set_led", "sleep", "wake", "heartbeat"]
 
+
 class PetEvent(BaseModel):
     model_config = ConfigDict(extra="forbid")
     type: Literal["event"] = "event"
@@ -14,6 +15,13 @@ class PetEvent(BaseModel):
     timestamp: float
     value: Any | None = None
     data: dict[str, Any] | None = None
+
+
+class PetInteraction(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    type: Literal["interaction"] = "interaction"
+    text: str = Field(min_length=1, max_length=1000)
+
 
 class PetCommand(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -27,6 +35,7 @@ class PetCommand(BaseModel):
     angle: int | None = Field(default=None, ge=0, le=180)
     sound: str | None = None
     value: Any | None = None
+
 
 class PetAck(BaseModel):
     model_config = ConfigDict(extra="forbid")
